@@ -11,9 +11,11 @@ interface Resource {
 
 interface ResourceGridProps {
   resources: Resource[];
+  favoriteIds: number[];
+  onToggleFavorite: (id: number) => void;
 }
 
-export const ResourceGrid = ({ resources }: ResourceGridProps) => {
+export const ResourceGrid = ({ resources, favoriteIds, onToggleFavorite }: ResourceGridProps) => {
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 px-6 sm:px-10 lg:px-20">
       {resources.map((resource) => (
@@ -23,6 +25,8 @@ export const ResourceGrid = ({ resources }: ResourceGridProps) => {
           description={resource.description}
           category={resource.category}
           url={resource.url}
+          isFavorite={favoriteIds.includes(resource.id)}
+          onToggleFavorite={() => onToggleFavorite(resource.id)}
         />
       ))}
     </div>

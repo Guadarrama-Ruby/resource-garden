@@ -124,6 +124,8 @@ const resources = [
 const Index = () => {
   const [filteredResources, setFilteredResources] = useState(resources);
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
+  const [favoriteIds, setFavoriteIds] = useState<number[]>([]);
+  const [showOnlyFavorites, setShowOnlyFavorites] = useState(false);
 
   const handleSearch = (query: string) => {
     const filtered = resources.filter(
@@ -135,32 +137,60 @@ const Index = () => {
     setFilteredResources(filtered);
   };
 
+  const handleToggleFavorite = (id: number) => {
+    setFavoriteIds(prev => 
+      prev.includes(id) 
+        ? prev.filter(favId => favId !== id)
+        : [...prev, id]
+    );
+  };
+
   const categories = Array.from(new Set(resources.map((r) => r.category)));
 
   const filteredByCategory = selectedCategory
     ? filteredResources.filter((r) => r.category === selectedCategory)
     : filteredResources;
 
+  const displayedResources = showOnlyFavorites
+    ? filteredByCategory.filter((r) => favoriteIds.includes(r.id))
+    : filteredByCategory;
+
   return (
     <div className="min-h-screen pb-20">
       <Hero />
       <div className="flex flex-wrap justify-center gap-2 mb-8 px-6 sm:px-10 lg:px-20">
         <button
-          onClick={() => setSelectedCategory(null)}
+          onClick={() => {
+            setSelectedCategory(null);
+            setShowOnlyFavorites(false);
+          }}
           className={`px-4 py-2 rounded-full text-sm font-medium transition-colors ${
-            selectedCategory === null
+            !selectedCategory && !showOnlyFavorites
               ? "bg-gray-900 text-white"
               : "bg-gray-100 text-gray-600 hover:bg-gray-200"
           }`}
         >
           All
         </button>
+        <button
+          onClick={() => setShowOnlyFavorites(true)}
+          className={`px-4 py-2 rounded-full text-sm font-medium transition-colors ${
+            showOnlyFavorites
+              ? "bg-gray-900 text-white"
+              : "bg-gray-100 text-gray-600 hover:bg-gray-200"
+          }`}
+        >
+          Favorites ({favoriteIds.length})
+        </button>
         {categories.map((category) => (
           <button
             key={category}
-            onClick={() => setSelectedCategory(category)}
+            onClick={() => {
+              setSelectedCategory(category);
+              setShowOnlyFavorites(false);
+            }}
             className={`px-4 py-2 rounded-full text-sm font-medium transition-colors ${
-              selectedCategory === category
+              selectedCategory === category && !showOnlyFavorites
                 ? "bg-gray-900 text-white"
                 : "bg-gray-100 text-gray-600 hover:bg-gray-200"
             }`}
@@ -170,7 +200,11 @@ const Index = () => {
         ))}
       </div>
       <SearchBar onSearch={handleSearch} />
-      <ResourceGrid resources={filteredByCategory} />
+      <ResourceGrid 
+        resources={displayedResources} 
+        favoriteIds={favoriteIds}
+        onToggleFavorite={handleToggleFavorite}
+      />
     </div>
   );
 };
