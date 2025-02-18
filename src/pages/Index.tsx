@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { Hero } from "@/components/Hero";
 import { SearchBar } from "@/components/SearchBar";
@@ -162,6 +163,13 @@ const Index = () => {
     setFilteredResources(updatedResources);
   };
 
+  const handleDeleteResource = (id: number) => {
+    const updatedResources = resources.filter(r => r.id !== id);
+    setResources(updatedResources);
+    setFilteredResources(updatedResources);
+    setFavoriteIds(prev => prev.filter(favId => favId !== id));
+  };
+
   const categories = Array.from(new Set(resources.map((r) => r.category)));
 
   const filteredByCategory = selectedCategory
@@ -224,6 +232,7 @@ const Index = () => {
         resources={displayedResources} 
         favoriteIds={favoriteIds}
         onToggleFavorite={handleToggleFavorite}
+        onDeleteResource={handleDeleteResource}
       />
     </div>
   );

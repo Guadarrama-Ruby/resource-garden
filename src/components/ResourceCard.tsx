@@ -1,5 +1,7 @@
 
-import { ExternalLink, Heart } from "lucide-react";
+import { ExternalLink, Heart, Trash2 } from "lucide-react";
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { Button } from "@/components/ui/button";
 
 interface ResourceCardProps {
   title: string;
@@ -8,6 +10,7 @@ interface ResourceCardProps {
   url: string;
   isFavorite: boolean;
   onToggleFavorite: () => void;
+  onDelete: () => void;
 }
 
 export const ResourceCard = ({ 
@@ -16,7 +19,8 @@ export const ResourceCard = ({
   category, 
   url, 
   isFavorite,
-  onToggleFavorite 
+  onToggleFavorite,
+  onDelete
 }: ResourceCardProps) => {
   return (
     <div className="resource-card p-6 animate-fade-in">
@@ -42,6 +46,29 @@ export const ResourceCard = ({
           >
             <ExternalLink className="h-5 w-5" />
           </a>
+          <Dialog>
+            <DialogTrigger asChild>
+              <button
+                className="text-gray-500 hover:text-red-500 transition-colors"
+                aria-label="Delete resource"
+              >
+                <Trash2 className="h-5 w-5" />
+              </button>
+            </DialogTrigger>
+            <DialogContent>
+              <DialogHeader>
+                <DialogTitle>Delete Resource</DialogTitle>
+                <DialogDescription>
+                  Are you sure you want to delete "{title}"? This action cannot be undone.
+                </DialogDescription>
+              </DialogHeader>
+              <DialogFooter>
+                <Button variant="outline" onClick={onDelete}>
+                  Yes, delete
+                </Button>
+              </DialogFooter>
+            </DialogContent>
+          </Dialog>
         </div>
       </div>
       <h3 className="text-xl font-semibold text-gray-900 mb-2">{title}</h3>
