@@ -1,10 +1,10 @@
-
 import { useState } from "react";
 import { Hero } from "@/components/Hero";
 import { SearchBar } from "@/components/SearchBar";
 import { ResourceGrid } from "@/components/ResourceGrid";
+import { AddResourceDialog } from "@/components/AddResourceDialog";
 
-const resources = [
+const initialResources = [
   // Image Generation
   {
     id: 1,
@@ -122,6 +122,7 @@ const resources = [
 ];
 
 const Index = () => {
+  const [resources, setResources] = useState(initialResources);
   const [filteredResources, setFilteredResources] = useState(resources);
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
   const [favoriteIds, setFavoriteIds] = useState<number[]>([]);
@@ -143,6 +144,22 @@ const Index = () => {
         ? prev.filter(favId => favId !== id)
         : [...prev, id]
     );
+  };
+
+  const handleAddResource = (newResource: {
+    title: string;
+    description: string;
+    category: string;
+    url: string;
+  }) => {
+    const newId = Math.max(...resources.map(r => r.id)) + 1;
+    const resourceWithId = {
+      ...newResource,
+      id: newId,
+    };
+    const updatedResources = [...resources, resourceWithId];
+    setResources(updatedResources);
+    setFilteredResources(updatedResources);
   };
 
   const categories = Array.from(new Set(resources.map((r) => r.category)));
@@ -199,7 +216,10 @@ const Index = () => {
           </button>
         ))}
       </div>
-      <SearchBar onSearch={handleSearch} />
+      <div className="flex justify-between items-center px-6 sm:px-10 lg:px-20 mb-8">
+        <SearchBar onSearch={handleSearch} />
+        <AddResourceDialog onAddResource={handleAddResource} categories={categories} />
+      </div>
       <ResourceGrid 
         resources={displayedResources} 
         favoriteIds={favoriteIds}
